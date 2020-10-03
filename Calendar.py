@@ -6,6 +6,6 @@ class Calendar():
         return datetime.datetime.now().strftime("%Y-%m-%d");
 
     def getNow(self):
-        return datetime.datetime.now().strftime("%H:%M:%S");
+        return datetime.datetime.now().strftime("%H:%M");
 
     

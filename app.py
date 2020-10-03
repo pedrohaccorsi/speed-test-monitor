@@ -5,10 +5,10 @@ from Snapshot import *;
 
 internet = Internet();
 calendar = Calendar();
-
 snapshots = [];
 
 for i in range (0,50):
+    sleep(10)
     snapshots.append(
         Snapshot(
             internet.getDownloadSpeedInMegabits(),
@@ -48,30 +48,17 @@ worksheet.write_column('D2', data[3])
 
 # Create a new chart object. In this case an embedded chart.
 chart1 = workbook.add_chart({'type': 'line'})
-
-max = 0
-for speed in data[3]:
-    if speed > max:
-        speed = max
-
-gap    = int(max / 10)
-values = []
-
-for speed in range(0, max):
-    values.append(speed)
-    speed = (speed + gap) if speed + gap <= max else max
-
-
-
+ 
 # Configure the first series.
 chart1.add_series({
     'name':       'Speed(Mbits)',
-    'categories': '=Sheet1!$A$2:$C$999',
-    'values':     values
+    'categories': f'=Sheet1!$B$2:$C${len(data[2])+1}',
+    'values':     f'=Sheet1!$D$2:$D${len(data[3])+1}',
+    'trendline': {'type': 'linear'}
 })
 
 # Add a chart title and some axis labels.
-chart1.set_title ({'name': 'Results of sample analysis'})
+chart1.set_title ({'name': 'Speedtest'})
 chart1.set_x_axis({'name': 'server locale/timestamp'})
 chart1.set_y_axis({'name': 'speed (Mbits)'})
 

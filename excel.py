@@ -12,24 +12,26 @@ bold = workbook.add_format({'bold': 1})
 # Add the worksheet data that the charts will refer to.
 headings = ['Number', 'Batch 1', 'Batch 2']
 data = [
-    [2, 3, 4, 5, 6, 7],
-    [10, 40, 50, 20, 10, 50],
-    [30, 60, 70, 50, 40, 30],
+    [2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10, 11, 12, 14, 15, 15, 16, 17, 18, 19, 29, 30 ],
+    [10, 40, 50, 20, 10, 50, 54, 87, 3 , 54, 23, 76, 54, 23, 56, 78,  9, 32,  1, 2  ]
 ]
 
 worksheet.write_row('A1', headings, bold)
 worksheet.write_column('A2', data[0])
 worksheet.write_column('B2', data[1])
-worksheet.write_column('C2', data[2])
 
+max = len(data[0]);
+
+cattegories = f'=Sheet1!$A$2:$A${max+1}'
+values      = f'=Sheet1!$B$2:$B${max+1}'
 # Create a new chart object. In this case an embedded chart.
 chart1 = workbook.add_chart({'type': 'line'})
 
 # Configure the first series.
 chart1.add_series({
     'name':       '=Sheet1!$B$1',
-    'categories': '=Sheet1!$A$2:$A$7',
-    'values':     '=Sheet1!$B$2:$B$7',
+    'categories': cattegories,
+    'values':     values
 })
 
 # Add a chart title and some axis labels.
