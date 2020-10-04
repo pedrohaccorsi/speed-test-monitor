@@ -1,48 +1,42 @@
-#
-# An example of creating Excel Line charts with Python and XlsxWriter.
-#
-# Copyright 2013-2020, John McNamara, jmcnamara@cpan.org
-#
 import xlsxwriter
+from Snapshot import *;
 
-workbook = xlsxwriter.Workbook('chart_line_2.xlsx')
-worksheet = workbook.add_worksheet()
-bold = workbook.add_format({'bold': 1})
+class Excel():
 
-# Add the worksheet data that the charts will refer to.
-headings = ['Number', 'Batch 1', 'Batch 2']
-data = [
-    [2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10, 11, 12, 14, 15, 15, 16, 17, 18, 19, 29, 30 ],
-    [10, 40, 50, 20, 10, 50, 54, 87, 3 , 54, 23, 76, 54, 23, 56, 78,  9, 32,  1, 2  ]
-]
+    def __init__(self, file_name):
+        self.workbook  = xlsxwriter.Workbook(file_name+'.xlsx')
+        self.worksheet = self.workbook.add_worksheet()
 
-worksheet.write_row('A1', headings, bold)
-worksheet.write_column('A2', data[0])
-worksheet.write_column('B2', data[1])
+    def createChart(self, snapshots):
+        headings = ['Date', 'Hour', 'Server', 'Speed(Mbits)']
+        data     = [ [], [], [], [] ]
 
-max = len(data[0]);
+        for snapshot in snapshots:
+            data[0].append(snapshot.getDate())
+            data[1].append(snapshot.getHour())
+            data[2].append(snapshot.getServer())
+            data[3].append(snapshot.getDownloadSpeed())
 
-cattegories = f'=Sheet1!$A$2:$A${max+1}'
-values      = f'=Sheet1!$B$2:$B${max+1}'
-# Create a new chart object. In this case an embedded chart.
-chart1 = workbook.add_chart({'type': 'line'})
+        chart1 = self.workbook.add_chart({'type': 'line'})
+        chart1.set_size({'width': 65*len(data[0]), 'height': 300})
 
-# Configure the first series.
-chart1.add_series({
-    'name':       '=Sheet1!$B$1',
-    'categories': cattegories,
-    'values':     values
-})
+        self.worksheet.write_row('A1', headings)
+        self.worksheet.write_column('A2', data[0])
+        self.worksheet.write_column('B2', data[1])
+        self.worksheet.write_column('C2', data[2])
+        self.worksheet.write_column('D2', data[3])
 
-# Add a chart title and some axis labels.
-chart1.set_title ({'name': 'Results of sample analysis'})
-chart1.set_x_axis({'name': 'Test number'})
-chart1.set_y_axis({'name': 'Sample length (mm)'})
+        chart1.add_series({
+            'name':       'Speed(Mbits)',
+            'categories': f'=Sheet1!$B$2:$C${len(data[2])+1}',
+            'values':     f'=Sheet1!$D$2:$D${len(data[3])+1}',
+            'trendline': {'type': 'moving_average', 'period': 2}
+        })
 
-# Set an Excel chart style. Colors with white outline and shadow.
-chart1.set_style(10)
+        chart1.set_title ({'name': 'Speedtest'})
+        chart1.set_x_axis({'name': 'server locale/timestamp'})
+        chart1.set_y_axis({'name': 'speed (Mbits)'})
+        chart1.set_style(10)
 
-# Insert the chart into the worksheet (with an offset).
-worksheet.insert_chart('D2', chart1, {'x_offset': 25, 'y_offset': 10})
-
-workbook.close()
+        self.worksheet.insert_chart('E2', chart1, {'x_offset': 25, 'y_offset': 10})
+        self.workbook.close()
